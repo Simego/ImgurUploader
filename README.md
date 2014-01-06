@@ -24,27 +24,19 @@ How to use (easy and fast!)
 
 7. Click the Start button and you're good to go!
 
-INFO
-===
-Screenshot shortcut: CTRL + SHIFT + C.
-
-Double-click on link to open it.
-
-Double-click on description to edit it.
-
+Information:<br/>
+Screenshot shortcut: CTRL + SHIFT + C.<br/>
+Double-click on link to open it.<br/>
+Double-click on description to edit it.<br/>
 Click on any row of the table and press 'DELETE' to delete the entry.
 
 
 Features
 ============
-Fullscreen screenshot
-
-Active window screenshot
-
-Imgur.com picture upload
-
-Local record of all pictures sent to Imgur (sqlite)
-
+Fullscreen screenshot<br/>
+Active window screenshot<br/>
+Imgur.com picture upload<br/>
+Local record of all pictures sent to Imgur (sqlite)<br/>
 All pictures can have descriptions.
 
 
@@ -53,3 +45,14 @@ Downloads
 Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.rar
 
 Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.rar
+
+
+Special thanks
+===========
+JIntellitype, for the worst part: https://code.google.com/p/jintellitype/
+
+SQLite, for the little database part: https://bitbucket.org/xerial/sqlite-jdbc (almost not needed but maybe for future versions ^^)
+
+Apache for the Apache Commons stuff: http://commons.apache.org/
+
+FlexJson for the json-object serializing part: http://flexjson.sourceforge.net/
