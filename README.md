@@ -24,7 +24,8 @@ How to use (easy and fast!)
 
 6. Get your Client ID key so you can use their API.
 
-7. Launch the program and use your Client ID there. (it will be saved)
+7. Launch the program and use your Client ID there. (it will be saved)<br/>
+   (if there is an error about the DLL, copy it to Windows/System32/ folder)
 
 8. Click the Start button and you're good to go!
 
