@@ -5,6 +5,9 @@ A simple software to make fast uploads to Imgur and have a little track of it (o
 
 Download link of the build at end of readme.
 
+Preview:<br/>
+![My image](http://i.imgur.com/4xxH4iK.png)
+
 
 
 How to use (easy and fast!)
