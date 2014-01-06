@@ -201,7 +201,7 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 44, Short.MAX_VALUE)
                         .addComponent(lblClientID)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtClientID, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -240,11 +240,11 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                     .addComponent(tbtnPrintType, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -347,7 +347,7 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
             linkDAO.insert(imgur.getData().getLink(), null, imgur.getData().getDateString());
             updateTable();
         } else {
-            JOptionPane.showMessageDialog(this, "Problem trying to upload the image, maybe wrong client id or connection issue?", "Error", JOptionPane.ERROR_MESSAGE);
+            output("[ERROR] Problem trying to upload the image, maybe wrong client id or connection issue? try again.", txtAreaInfo);
         }
     }
 
