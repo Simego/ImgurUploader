@@ -42,7 +42,7 @@ Fullscreen screenshot<br/>
 Active window screenshot<br/>
 Imgur.com picture upload<br/>
 Local record of all pictures sent to Imgur (sqlite)<br/>
-All pictures can have descriptions.
+All pictures can have descriptions.<br/>
 Minimize to tray. (screen will be hidden until you click on the tray icon to bring it back)
 
 
