@@ -47,9 +47,9 @@ All pictures can have descriptions.
 
 Downloads
 ============
-Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.rar
+Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.zip
 
-Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.rar
+Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.zip
 
 
 Special thanks
