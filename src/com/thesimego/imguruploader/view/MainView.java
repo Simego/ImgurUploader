@@ -7,17 +7,33 @@ import com.thesimego.imguruploader.dao.LinkDAO;
 import com.thesimego.imguruploader.entity.Imgur;
 import com.thesimego.imguruploader.entity.Link;
 import com.thesimego.imguruploader.system.Functions;
+import java.awt.AWTException;
 import java.awt.Desktop;
+import static java.awt.Frame.ICONIFIED;
+import static java.awt.Frame.MAXIMIZED_BOTH;
+import static java.awt.Frame.NORMAL;
 import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
 import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -29,6 +45,8 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
     private static final int PRINT_SCREEN = 91;
     private final LinkDAO linkDAO = new LinkDAO();
     private final Functions functions = new Functions(this);
+    private TrayIcon trayIcon;
+    private SystemTray tray;
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -42,13 +60,7 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
@@ -64,13 +76,15 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
 
     public MainView() {
         initComponents();
+        setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
         setLocationRelativeTo(null);
         updateTable();
+        createTrayFunctions();
         try {
             initJIntellitype();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Init Error", JOptionPane.ERROR_MESSAGE);
-            endApplication();
+            System.exit(0);
         }
         txtClientID.setText(functions.loadClientID());
         btnParar.setEnabled(false);
@@ -80,7 +94,7 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         try {
             JIntellitype.getInstance().addHotKeyListener(this);
             JIntellitype.getInstance().addIntellitypeListener(this);
-            output("JIntellitype initialized", txtAreaInfo);
+            output("[INFO] If you choose PRINT SCREEN as shortcut,the normal PRINT SCREEN won't work\nafter you START the program and until you STOP it.", txtAreaInfo);
         } catch (HeadlessException ex) {
             output("Either you are not on Windows, or there is a problem with the JIntellitype library!", txtAreaInfo);
         }
@@ -100,9 +114,10 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         txtAreaInfo = new javax.swing.JTextArea();
         tbtnPrintType = new javax.swing.JToggleButton();
         btnHelpInfo = new javax.swing.JButton();
-        lblHelpClientID = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tableImages = new javax.swing.JTable();
+        comboShortcut = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Imgur Uploader by Simego");
@@ -149,14 +164,6 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
             }
         });
 
-        lblHelpClientID.setForeground(new java.awt.Color(0, 102, 255));
-        lblHelpClientID.setText("(?)");
-        lblHelpClientID.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblHelpClientIDMouseClicked(evt);
-            }
-        });
-
         tableImages.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -193,6 +200,10 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         });
         jScrollPane3.setViewportView(tableImages);
 
+        comboShortcut.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CTRL + SHIFT + C", "PRINT SCREEN" }));
+
+        jLabel1.setText("Shortcut:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -201,27 +212,32 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 44, Short.MAX_VALUE)
-                        .addComponent(lblClientID)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtClientID, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblHelpClientID)
-                        .addGap(16, 16, 16)
-                        .addComponent(btnIniciar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnParar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnHelpInfo))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(tbtnPrintType))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblClientID)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtClientID)
+                                .addGap(2, 2, 2))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnIniciar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnParar))
+                            .addComponent(comboShortcut, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnHelpInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tbtnPrintType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -233,11 +249,13 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                     .addComponent(btnParar)
                     .addComponent(txtClientID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblClientID)
-                    .addComponent(lblHelpClientID)
-                    .addComponent(btnHelpInfo))
+                    .addComponent(tbtnPrintType))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tbtnPrintType, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboShortcut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addComponent(btnHelpInfo))
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
@@ -267,14 +285,6 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         }
     }//GEN-LAST:event_btnIniciarActionPerformed
 
-    private void lblHelpClientIDMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblHelpClientIDMouseClicked
-        try {
-            Desktop.getDesktop().browse(new URI("https://api.imgur.com/"));
-        } catch (IOException | URISyntaxException ex) {
-            output("[ERROR] " + ex.getMessage(), txtAreaInfo);
-        }
-    }//GEN-LAST:event_lblHelpClientIDMouseClicked
-
     private void tableImagesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableImagesMouseClicked
         JTable table = (JTable) evt.getSource();
         if (evt.getClickCount() == 2) {
@@ -286,7 +296,7 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
                         uri = new URI((String) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
                         Desktop.getDesktop().browse(uri);
                     } catch (URISyntaxException | IOException ex) {
-                        output("[ERROR] " + ex.getMessage(), txtAreaInfo);
+                        outputError(ex.getMessage());
                     }
                     break;
                 case 1:
@@ -302,17 +312,20 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
     }//GEN-LAST:event_tableImagesMouseClicked
 
     private void btnHelpInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHelpInfoActionPerformed
-        JOptionPane.showMessageDialog(this, "To use this software you need to register at imgur.com and get a Client ID.\n"
-                + "Click at the (?) text on the right side of the ClientID field to open the website.\n\n"
-                + "This software is Open Source and was developed by Simego.\n"
-                + "(and many code contributions from google searches)", "Help / Information", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            Desktop.getDesktop().browse(new URI("https://github.com/Simego/ImgurUploader/blob/master/README.md"));
+        } catch (IOException | URISyntaxException ex) {
+            outputError(ex.getMessage());
+        }
     }//GEN-LAST:event_btnHelpInfoActionPerformed
 
     private void tableImagesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableImagesKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
-            if (JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this entry?", "Delete entry", JOptionPane.YES_NO_OPTION) == 0) {
+            if (JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the selected entries?", "Delete entry", JOptionPane.YES_NO_OPTION) == 0) {
                 JTable table = (JTable) evt.getSource();
-                linkDAO.delete(table.getValueAt(table.getSelectedRow(), 0).toString());
+                for (int i : table.getSelectedRows()) {
+                    linkDAO.delete(table.getValueAt(i, 0).toString());
+                }
                 updateTable();
             }
         }
@@ -323,9 +336,18 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
     }//GEN-LAST:event_txtClientIDFocusLost
 
     private void startKeyCapture() {
-        JIntellitype.getInstance().registerHotKey(PRINT_SCREEN, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, 'C');
+        int comboIndex = comboShortcut.getSelectedIndex();
+        switch (comboIndex) {
+            case 0:
+                JIntellitype.getInstance().registerHotKey(PRINT_SCREEN, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, 'C');
+                break;
+            case 1:
+                JIntellitype.getInstance().registerHotKey(PRINT_SCREEN, 0, 44);
+                break;
+        }
+
         output("System started, screenshots will be uploaded to your Imgur account.", txtAreaInfo);
-        output("Hotkey: CTRL + SHIFT + C", txtAreaInfo);
+        output("Hotkey: " + comboShortcut.getSelectedItem().toString(), txtAreaInfo);
     }
 
     private void stopKeyCapture() {
@@ -341,13 +363,13 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         } else {
             imgur = functions.getImgurData(txtClientID.getText(), false);
         }
-        if(imgur != null) {
+        if (imgur != null) {
             output("[INFO] Upload complete.", txtAreaInfo);
             output("[INFO] " + imgur.getData().toString(), txtAreaInfo);
             linkDAO.insert(imgur.getData().getLink(), null, imgur.getData().getDateString());
             updateTable();
         } else {
-            output("[ERROR] Problem trying to upload the image, maybe wrong client id or connection issue? try again.", txtAreaInfo);
+            outputError("Problem trying to upload the image, maybe wrong client id or connection issue? try again.");
         }
     }
 
@@ -378,26 +400,125 @@ public class MainView extends javax.swing.JFrame implements HotkeyListener, Inte
         return txtAreaInfo;
     }
 
-    private void endApplication() {
-        WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
-        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
-    }
-
     public void output(String text, JTextArea ta) {
         ta.append(text);
         ta.append("\n");
+    }
+
+    public void outputError(String text) {
+        txtAreaInfo.append("[ERROR] " + text);
+        txtAreaInfo.append("\n");
+    }
+
+    private void createTrayFunctions() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            outputError("Unable to set LookAndFeel.");
+        }
+
+        if (SystemTray.isSupported()) {
+            tray = SystemTray.getSystemTray();
+            Image image = Toolkit.getDefaultToolkit().getImage("icon.png");
+            PopupMenu popup = new PopupMenu();
+            generateTrayPopupMenu(popup);
+            trayIcon = new TrayIcon(image, getTitle(), popup);
+            generateActionTrayIcon();
+            trayIcon.setImageAutoSize(true);
+        } else {
+            outputError("System tray not supported.");
+        }
+
+        generateWindowStateListener();
+    }
+
+    private void generateWindowStateListener() {
+        addWindowStateListener(new WindowStateListener() {
+            @Override
+            public void windowStateChanged(WindowEvent e) {
+                if (e.getNewState() == ICONIFIED) {
+                    try {
+                        tray.add(trayIcon);
+                        setVisible(false);
+                    } catch (AWTException ex) {
+                        outputError("Unable to add to tray.");
+                    }
+                }
+                if (e.getNewState() == 7) {
+                    try {
+                        tray.add(trayIcon);
+                        setVisible(false);
+                    } catch (AWTException ex) {
+                        outputError("Unable to add to system tray.");
+                    }
+                }
+                if (e.getNewState() == MAXIMIZED_BOTH) {
+                    tray.remove(trayIcon);
+                    setVisible(true);
+                }
+                if (e.getNewState() == NORMAL) {
+                    tray.remove(trayIcon);
+                    setVisible(true);
+                }
+            }
+        });
+    }
+
+    private void generateActionTrayIcon() {
+        trayIcon.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getButton() == MouseEvent.BUTTON1) {
+                    setVisible(true);
+                    try {
+                        SystemTray.getSystemTray().remove(trayIcon);
+                        setState(NORMAL);
+                    } catch (Exception ex) {
+                        outputError(ex.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
+    private void generateTrayPopupMenu(PopupMenu popup) {
+        MenuItem defaultItem;
+
+        ActionListener openListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(true);
+                setExtendedState(JFrame.NORMAL);
+            }
+        };
+
+        defaultItem = new MenuItem("Open");
+        defaultItem.addActionListener(openListener);
+        popup.add(defaultItem);
+
+        ActionListener exitListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        };
+
+        defaultItem = new MenuItem("Exit");
+        defaultItem.addActionListener(exitListener);
+        popup.add(defaultItem);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnHelpInfo;
     private javax.swing.JButton btnIniciar;
     private javax.swing.JButton btnParar;
+    private javax.swing.JComboBox comboShortcut;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblClientID;
-    private javax.swing.JLabel lblHelpClientID;
     private javax.swing.JTable tableImages;
     private javax.swing.JToggleButton tbtnPrintType;
     private javax.swing.JTextArea txtAreaInfo;

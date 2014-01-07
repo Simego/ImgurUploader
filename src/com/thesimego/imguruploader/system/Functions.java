@@ -34,6 +34,7 @@ import org.apache.commons.codec.binary.Base64;
 public class Functions {
 
     private final ClipboardData clipboardData = new ClipboardData();
+
     private final MainView jframe;
 
     public Functions(MainView jframe) {
@@ -49,7 +50,7 @@ public class Functions {
 
             return imgur;
         } catch (Exception ex) {
-            jframe.output("[ERROR] " + ex.getMessage(), jframe.getInfoTextArea());
+            jframe.outputError(ex.getMessage());
             return null;
         }
     }
@@ -134,8 +135,6 @@ public class Functions {
             throw new IllegalArgumentException("No robot");
         }
 
-        // Press Alt + PrintScreen
-        // (Windows shortcut to take a screen shot of the active window)
         robot.keyPress(KeyEvent.VK_ALT);
         robot.keyPress(KeyEvent.VK_PRINTSCREEN);
         robot.keyRelease(KeyEvent.VK_PRINTSCREEN);
@@ -148,7 +147,7 @@ public class Functions {
                 writer.write(clientID);
             }
         } catch (IOException ex) {
-            jframe.output("[ERROR] " + ex.getMessage(), jframe.getInfoTextArea());
+            jframe.outputError(ex.getMessage());
         }
     }
 
