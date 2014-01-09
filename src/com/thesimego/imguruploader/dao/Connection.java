@@ -20,12 +20,19 @@ public class Connection {
             statement.setQueryTimeout(30);
 
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS links (\n"
+                    "CREATE TABLE IF NOT EXISTS images (\n"
                     + "  id INTEGER NOT NULL ON CONFLICT ROLLBACK PRIMARY KEY AUTOINCREMENT, \n"
                     + "  link VARCHAR(64) NOT NULL ON CONFLICT ROLLBACK, \n"
                     + "  description VARCHAR(24), \n"
-                    + "  date VARCHAR(24) NOT NULL ON CONFLICT ROLLBACK);"
-            );
+                    + "  delete_hash VARCHAR(64) NOT NULL ON CONFLICT ROLLBACK, \n"
+                    + "  date VARCHAR(24) NOT NULL ON CONFLICT ROLLBACK);");
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS albums (\n"
+                    + "  id INTEGER NOT NULL ON CONFLICT ROLLBACK PRIMARY KEY AUTOINCREMENT, \n"
+                    + "  link VARCHAR(64) NOT NULL ON CONFLICT ROLLBACK, \n"
+                    + "  title VARCHAR(24) NOT NULL ON CONFLICT ROLLBACK, \n"
+                    + "  delete_hash VARCHAR(64) NOT NULL ON CONFLICT ROLLBACK);");
 
             return statement;
         } catch (ClassNotFoundException | SQLException e) {

@@ -1,4 +1,4 @@
-package com.thesimego.imguruploader.entity;
+package com.thesimego.imguruploader.entity.imgur;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,18 +6,18 @@ import javax.annotation.Generated;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Generated("com.googlecode.jsonschema2pojo")
-public class Imgur {
+public class ImgurImage {
 
-    private ImgurData data;
+    private ImgurImageData data;
     private Boolean success;
     private Integer status;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
-    public ImgurData getData() {
+    public ImgurImageData getData() {
         return data;
     }
 
-    public void setData(ImgurData data) {
+    public void setData(ImgurImageData data) {
         this.data = data;
     }
 

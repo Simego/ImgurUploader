@@ -24,22 +24,31 @@ public class ClipboardData implements ClipboardOwner {
     }
 
     /**
-     * Place a String on the clipboard, and make this class the owner of the
-     * Clipboard's contents.
+     * Place a String on the clipboard, and make this class the owner of the Clipboard's contents.
      *
      * @param aString
      */
-    public void setData(String aString) {
+    public void setStringData(String aString) {
         StringSelection stringSelection = new StringSelection(aString);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, this);
     }
 
     /**
+     * Place an Image on the clipboard, and make this class the owner of the Clipboard's contents.
+     *
+     * @param aImage
+     */
+    public void setImageData(Image aImage) {
+        TransferableImage transferable = new TransferableImage(aImage);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(transferable, this);
+    }
+
+    /**
      * Get the String residing on the clipboard.
      *
-     * @return any text found on the Clipboard; if none found, return an empty
-     * String.
+     * @return any text found on the Clipboard; if none found, return an empty String.
      * @throws java.awt.datatransfer.UnsupportedFlavorException
      * @throws java.io.IOException
      */
@@ -54,12 +63,11 @@ public class ClipboardData implements ClipboardOwner {
         }
         return result;
     }
-    
+
     /**
      * Get the Image residing on the clipboard.
      *
-     * @return any text found on the Clipboard; if none found, return an empty
-     * Image.
+     * @return any text found on the Clipboard; if none found, return an empty Image.
      * @throws java.awt.datatransfer.UnsupportedFlavorException
      * @throws java.io.IOException
      * @throws java.lang.InterruptedException

@@ -1,4 +1,4 @@
-package com.thesimego.imguruploader.entity;
+package com.thesimego.imguruploader.entity.imgur;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.Generated;
 
 @Generated("com.googlecode.jsonschema2pojo")
-public class ImgurData {
+public class ImgurImageData {
 
     private String id;
     private Object title;
