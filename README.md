@@ -14,20 +14,7 @@ How to use (easy and fast!)
 ============
 1. Have the latest Java for your system (x64 or x86 as the program requires it)
 
-2. Create an account at Imgur.com (https://imgur.com/register)
-
-3. Read the Imgur.com API page. (if you want to, i recommend)
-
-4. Register a new application. (https://api.imgur.com/oauth2/addclient)
-
-5. Fill all fields and select the option: "Anonymous usage without user authorization"
-
-6. Get your Client ID key so you can use their API.
-
-7. Launch the program and use your Client ID there. (it will be saved)<br/>
-   (if there is an error about the DLL, copy it to Windows/System32/ folder)
-
-8. Click the Start button and you're good to go!
+2. Click the Start button and you're good to go!<br/>
 
 Information:<br/>
 Screenshot shortcut: CTRL + SHIFT + C.<br/>
