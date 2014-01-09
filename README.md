@@ -42,14 +42,15 @@ Fullscreen screenshot<br/>
 Active window screenshot<br/>
 Imgur.com picture upload<br/>
 Local record of all pictures sent to Imgur (sqlite)<br/>
-All pictures can have descriptions.
+All pictures can have descriptions.<br/>
+Minimize to tray. (screen will be hidden until you click on the tray icon to bring it back)
 
 
 Downloads
 ============
-Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.rar
+Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.zip
 
-Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.rar
+Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.zip
 
 
 Special thanks
