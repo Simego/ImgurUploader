@@ -28,6 +28,9 @@ Minimize to tray. (screen will be hidden until you click on the tray icon to bri
 Double-click on link to open it.<br/>
 Double-click on description to edit it.<br/>
 Click on any row of the table and press 'DELETE' to delete the entry.<br/>
+Create and Delete albums.<br/>
+Upload images to selected albums<br/>
+
 
 
 Downloads
