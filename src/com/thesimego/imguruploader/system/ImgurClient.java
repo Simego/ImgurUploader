@@ -16,12 +16,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Iterator;
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
+import javax.swing.JOptionPane;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -46,7 +42,11 @@ public class ImgurClient {
 
             return imgur;
         } catch (UnsupportedFlavorException | IOException | InterruptedException | AWTException ex) {
-            mainView.outputError(ex.getMessage());
+            if (mainView == null) {
+                System.err.println(ex.getMessage());
+            } else {
+                mainView.outputError(ex.getMessage());
+            }
             return null;
         }
     }
@@ -111,21 +111,42 @@ public class ImgurClient {
             //System.out.println(stb.toString());
         } catch (IOException ex) {
             if (ex instanceof FileNotFoundException) {
-                mainView.outputError("Image not found, probably already deleted.");
+                String message = "Image not found at Imgur.com, probably already deleted, local entry deleted.";
+                if (mainView != null) {
+                    mainView.outputError(message);
+                } else {
+                    System.err.println(message);
+                }
                 return true;
             } else {
-                mainView.outputError(ex.getMessage());
-                return false;
+                if (mainView == null) {
+                    System.err.println(ex.getMessage());
+                } else {
+                    mainView.outputError(ex.getMessage());
+                }
+                return true;
             }
         }
     }
 
     public Album doAlbumCreate(String clientID, String title, String layout, String privacy, String cover) {
+
+        if (cover != null && !cover.trim().isEmpty() && !cover.matches("http(|s)\\://(|i\\.)imgur\\.com/.*")) {
+            JOptionPane.showMessageDialog(null, "Cover must be an Imgur Image Link.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
         String content = albumCreate(clientID, title, layout, privacy, cover);
 
         JSONDeserializer<Album> streamDes = new JSONDeserializer<>();
         Album album = streamDes.deserialize(content, Album.class);
         album.getData().setTitle(title);
+
+        if (album.getData().getDeletehash() == null) {
+            JOptionPane.showMessageDialog(null, "Something happened and couldn't create the album, try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
         return album;
     }
 
@@ -165,7 +186,11 @@ public class ImgurClient {
             //System.out.println(stb.toString());
             return stb.toString();
         } catch (IOException ex) {
-            mainView.outputError(ex.getMessage());
+            if (mainView == null) {
+                System.err.println(ex.getMessage());
+            } else {
+                mainView.outputError(ex.getMessage());
+            }
             return null;
         }
     }
@@ -192,11 +217,20 @@ public class ImgurClient {
             //System.out.println(stb.toString());
         } catch (IOException ex) {
             if (ex instanceof FileNotFoundException) {
-                mainView.outputError("Album not found, probably already deleted.");
+                String message = "Album not found at Imgur.com, probably already deleted, local entry deleted.";
+                if (mainView != null) {
+                    mainView.outputError(message);
+                } else {
+                    System.err.println(message);
+                }
                 return true;
             } else {
-                mainView.outputError(ex.getMessage());
-                return false;
+                if (mainView != null) {
+                    mainView.outputError(ex.getMessage());
+                } else {
+                    System.err.println(ex.getMessage());
+                }
+                return true;
             }
         }
     }
@@ -227,7 +261,11 @@ public class ImgurClient {
             return album;
             //System.out.println(stb.toString());
         } catch (IOException ex) {
-            mainView.outputError(ex.getMessage());
+            if (mainView == null) {
+                System.err.println(ex.getMessage());
+            } else {
+                mainView.outputError(ex.getMessage());
+            }
             return null;
         }
     }
