@@ -51,7 +51,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
 
     private SystemTray tray;
 
-    private final String defaultClientID = "893965e3f79b7f8";
+    private final String defaultClientID = "YOUR_CLIENT_ID_HERE";
 
     //<editor-fold defaultstate="collapsed" desc="Main">
     public static void main(String args[]) {
