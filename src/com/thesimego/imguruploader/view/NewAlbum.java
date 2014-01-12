@@ -157,26 +157,16 @@ public class NewAlbum extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Main m = (Main) getParent();
         String title = txtTitle.getText().substring(0, txtTitle.getText().length() > 20 ? 20 : txtTitle.getText().length());
-        String cover = null;
-        boolean coverMatchUrl = txtCover.getText().matches("http(|s)\\://(|i\\.)imgur\\.com/.*");
         
-        if (!txtCover.getText().isEmpty() && !coverMatchUrl) {
-            JOptionPane.showMessageDialog(this, "Cover must be an Imgur Image Link.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        } else if (coverMatchUrl) {
-            cover = txtCover.getText().replaceAll("http(|s)\\://(|i\\.)imgur\\.com/", "").replaceAll("\\..*", "");
-        }
-
         ImgurClient imgurClient = new ImgurClient(m);
-        Album album = imgurClient.doAlbumCreate(m.getClientID(), title, comboLayout.getSelectedItem().toString(), comboPrivacy.getSelectedItem().toString(), cover);
+        Album album = imgurClient.doAlbumCreate(m.getClientID(), title, comboLayout.getSelectedItem().toString(), comboPrivacy.getSelectedItem().toString(), txtCover.getText());
         if (album != null) {
             AlbumDAO.insert(album.getData().getTitle(), album.getData().getFullLink(), album.getData().getDeletehash());
             m.outputInfo("Album " + album.getData().getFullLink() + " has been created.");
             m.updateAlbumTable();
-        } else {
-            JOptionPane.showMessageDialog(this, "Something happened and couldn't create the album.", "Error", JOptionPane.ERROR_MESSAGE);
+            closeWindow();
         }
-        closeWindow();
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
