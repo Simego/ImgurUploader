@@ -8,7 +8,6 @@ import com.thesimego.imguruploader.dao.ImageDAO;
 import com.thesimego.imguruploader.entity.AlbumEN;
 import com.thesimego.imguruploader.entity.ImageEN;
 import com.thesimego.imguruploader.entity.imgur.ImgurImage;
-import com.thesimego.imguruploader.system.Functions;
 import com.thesimego.imguruploader.system.ImgurClient;
 import java.awt.AWTException;
 import java.awt.Desktop;
@@ -86,27 +85,32 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
     public Main() {
         //<editor-fold defaultstate="collapsed" desc="MainView Constructor">
         initComponents();
+        createTrayFunctions();
+        initSystem();
+        //</editor-fold>
+    }
 
+    private void initSystem() {
         setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
         setLocationRelativeTo(null);
 
         tableImages.getColumnModel().getColumn(0).setPreferredWidth(90);
         tableImages.getColumnModel().getColumn(1).setPreferredWidth(130);
-        tableImages.getColumnModel().getColumn(2).setPreferredWidth(45);
+        tableImages.getColumnModel().getColumn(2).setPreferredWidth(25);
+        tableAlbums.getColumnModel().getColumn(0).setPreferredWidth(100);
+        tableAlbums.getColumnModel().getColumn(1).setPreferredWidth(100);
 
         updateImageTable();
         updateAlbumTable();
 
-        createTrayFunctions();
         try {
             initJIntellitype();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Init Error", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
-        txtClientID.setText(Functions.loadClientID());
+
         btnStop.setEnabled(false);
-        //</editor-fold>
     }
 
     private void initJIntellitype() {
@@ -331,11 +335,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
     //</editor-fold>
 
     public String getClientID() {
-        if (txtClientID.getText().trim().isEmpty()) {
-            return defaultClientID;
-        } else {
-            return txtClientID.getText();
-        }
+        return defaultClientID;
     }
 
     public void outputError(String text) {
@@ -354,8 +354,6 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
 
         btnStart = new javax.swing.JButton();
         btnStop = new javax.swing.JButton();
-        txtClientID = new javax.swing.JTextField();
-        lblClientID = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -368,8 +366,6 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         jScrollPane1 = new javax.swing.JScrollPane();
         tableAlbums = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
-        chkbDefaultUser = new javax.swing.JCheckBox();
-        jLabel5 = new javax.swing.JLabel();
         chkbPrintActWin = new javax.swing.JCheckBox();
         btnNewAlbum = new javax.swing.JButton();
 
@@ -391,14 +387,6 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
                 btnStopActionPerformed(evt);
             }
         });
-
-        txtClientID.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtClientIDFocusLost(evt);
-            }
-        });
-
-        lblClientID.setText("Imgur Client ID:");
 
         jLabel2.setText("Images: (double-click to open link or edit description)");
 
@@ -443,9 +431,15 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
                 return canEdit [columnIndex];
             }
         });
+        tableImages.setFillsViewportHeight(true);
         tableImages.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableImagesMouseClicked(evt);
+            }
+        });
+        tableImages.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tableImagesFocusLost(evt);
             }
         });
         tableImages.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -483,6 +477,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
                 return canEdit [columnIndex];
             }
         });
+        tableAlbums.setFillsViewportHeight(true);
         tableAlbums.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableAlbumsMouseClicked(evt);
@@ -495,14 +490,11 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         });
         jScrollPane1.setViewportView(tableAlbums);
 
-        jLabel4.setText("Albums: (next images will be uploaded to the selected album)");
-
-        chkbDefaultUser.setSelected(true);
-        chkbDefaultUser.setText("Use default user?");
-
-        jLabel5.setText("OR");
+        jLabel4.setText("Albums: (images will be uploaded to the selected album)");
 
         chkbPrintActWin.setText("Print active window only?");
+        chkbPrintActWin.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        chkbPrintActWin.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
         btnNewAlbum.setText("Create new Album");
         btnNewAlbum.addActionListener(new java.awt.event.ActionListener() {
@@ -517,78 +509,68 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addGap(430, 430, 430))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(356, 356, 356)
+                                .addComponent(jLabel4)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lblClientID)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtClientID, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(chkbDefaultUser)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(chkbPrintActWin)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnHelpInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(comboShortcut, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(19, 19, 19)
-                                .addComponent(btnStart)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnStop)
+                                .addGap(20, 20, 20)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(chkbPrintActWin)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(comboShortcut, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(67, 67, 67)
+                                .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(20, 20, 20)
+                                .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnNewAlbum, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(65, 65, 65)))
-                        .addGap(0, 10, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnHelpInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnNewAlbum, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(chkbPrintActWin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboShortcut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnStop, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(btnHelpInfo)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnNewAlbum))))
+                .addGap(13, 13, 13)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtClientID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblClientID)
-                    .addComponent(chkbDefaultUser)
-                    .addComponent(jLabel5)
-                    .addComponent(btnHelpInfo)
-                    .addComponent(chkbPrintActWin))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnStart)
-                        .addComponent(btnStop)
-                        .addComponent(btnNewAlbum))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(comboShortcut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -604,24 +586,16 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         stopKeyCapture();
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
-        chkbDefaultUser.setEnabled(true);
-        txtClientID.setEnabled(true);
         comboShortcut.setEnabled(true);
         //</editor-fold>
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         //<editor-fold defaultstate="collapsed" desc="Start Button Action">
-        if (txtClientID.getText().trim().isEmpty() && !chkbDefaultUser.isSelected()) {
-            outputError("Please type your Imgur Client ID.");
-        } else {
-            startKeyCapture();
-            btnStop.setEnabled(true);
-            btnStart.setEnabled(false);
-            chkbDefaultUser.setEnabled(false);
-            txtClientID.setEnabled(false);
-            comboShortcut.setEnabled(false);
-        }
+        startKeyCapture();
+        btnStop.setEnabled(true);
+        btnStart.setEnabled(false);
+        comboShortcut.setEnabled(false);
         //</editor-fold>
     }//GEN-LAST:event_btnStartActionPerformed
 
@@ -680,19 +654,16 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         //</editor-fold>
     }//GEN-LAST:event_tableImagesKeyPressed
 
-    private void txtClientIDFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtClientIDFocusLost
-        //<editor-fold defaultstate="collapsed" desc="Client ID TextBox focus lost (save ClientID)">
-        Functions.saveClientID(txtClientID.getText());
-        //</editor-fold>
-    }//GEN-LAST:event_txtClientIDFocusLost
-
     private void tableAlbumsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableAlbumsMouseClicked
         //<editor-fold defaultstate="collapsed" desc="Album Table Mouseclick (open links)">
         JTable table = (JTable) evt.getSource();
-        if (evt.getClickCount() == 2 && table.getSelectedColumn() == 1) {
+        if (table.rowAtPoint(evt.getPoint()) == -1) {
+            table.clearSelection();
+        }
+        if (evt.getClickCount() == 2) {
             URI uri;
             try {
-                uri = new URI(tableAlbums.getValueAt(tableAlbums.getSelectedRow(), 1).toString());
+                uri = new URI(table.getValueAt(table.getSelectedRow(), 1).toString());
                 Desktop.getDesktop().browse(uri);
             } catch (URISyntaxException | IOException ex) {
                 outputError(ex.getMessage());
@@ -726,27 +697,28 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         //</editor-fold>
     }//GEN-LAST:event_btnNewAlbumActionPerformed
 
+    private void tableImagesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tableImagesFocusLost
+        JTable table = (JTable) evt.getSource();
+        table.clearSelection();
+    }//GEN-LAST:event_tableImagesFocusLost
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnHelpInfo;
     private javax.swing.JButton btnNewAlbum;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
-    private javax.swing.JCheckBox chkbDefaultUser;
     private javax.swing.JCheckBox chkbPrintActWin;
     private javax.swing.JComboBox comboShortcut;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JLabel lblClientID;
     private javax.swing.JTable tableAlbums;
     private javax.swing.JTable tableImages;
     private javax.swing.JTextArea txtAreaInfo;
-    private javax.swing.JTextField txtClientID;
     // End of variables declaration//GEN-END:variables
 
 }
