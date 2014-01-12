@@ -21,7 +21,7 @@ v1.1
 <br/>
 <br/>
 
-1.0
+v1.0
 ---
 * Image upload to Imgur.<br/>
 * Save all image links to local database.<br/>
