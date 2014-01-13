@@ -6,7 +6,7 @@ A simple software to make fast uploads to Imgur and have a little track of it (o
 Download link of the build at end of readme.
 
 Preview:<br/>
-![http://i.imgur.com/nXLYN9N.png](http://i.imgur.com/nXLYN9N.png)
+![http://i.imgur.com/TU66ZNf.png](http://i.imgur.com/TU66ZNf.png)
 
 
 
