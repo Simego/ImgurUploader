@@ -1,20 +1,17 @@
 package com.thesimego.imguruploader.view;
 
-import com.melloware.jintellitype.HotkeyListener;
-import com.melloware.jintellitype.IntellitypeListener;
-import com.melloware.jintellitype.JIntellitype;
 import com.thesimego.imguruploader.dao.AlbumDAO;
 import com.thesimego.imguruploader.dao.ImageDAO;
 import com.thesimego.imguruploader.entity.AlbumEN;
 import com.thesimego.imguruploader.entity.ImageEN;
-import com.thesimego.imguruploader.entity.imgur.ImgurImage;
 import com.thesimego.imguruploader.system.ImgurClient;
+import com.thesimego.imguruploader.system.JIntellitypeController;
 import java.awt.AWTException;
+import java.awt.Component;
 import java.awt.Desktop;
 import static java.awt.Frame.ICONIFIED;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import static java.awt.Frame.NORMAL;
-import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -30,6 +27,8 @@ import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -41,9 +40,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Simego
  */
-public class Main extends javax.swing.JFrame implements HotkeyListener, IntellitypeListener {
-
-    private static final int PRINT_SCREEN = 91;
+public class Main extends javax.swing.JFrame {
 
     private final ImgurClient imgurClient = new ImgurClient(this);
 
@@ -51,17 +48,17 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
 
     private SystemTray tray;
 
-    private final String defaultClientID = "YOUR_CLIENT_ID_HERE";
+    private JIntellitypeController jintellitype;
+
+    private final String defaultClientID = "YOUR_CODE_HERE";
 
     //<editor-fold defaultstate="collapsed" desc="Main">
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                // Nimbus removed, http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7169951
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -103,84 +100,12 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         updateImageTable();
         updateAlbumTable();
 
-        try {
-            initJIntellitype();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Init Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-        }
+        jintellitype = new JIntellitypeController(this);
 
         btnStop.setEnabled(false);
     }
 
-    private void initJIntellitype() {
-        //<editor-fold defaultstate="collapsed" desc="Init JIntellitype">
-        try {
-            JIntellitype.getInstance().addHotKeyListener(this);
-            JIntellitype.getInstance().addIntellitypeListener(this);
-            outputInfo("After START, this system will override the selected SHORTCUT function until it STOP.");
-            outputInfo("If you can't upload images on 'default user', click the Help button and find out how to create a ClientID.");
-        } catch (HeadlessException ex) {
-            outputError("Either you are not on Windows, or there is a problem with the JIntellitype library!");
-        }
-        //</editor-fold>
-    }
-
-    private void startKeyCapture() {
-        //<editor-fold defaultstate="collapsed" desc="Start Key Capture (JIntellitype)">
-        int comboIndex = comboShortcut.getSelectedIndex();
-        switch (comboIndex) {
-            case 0:
-                JIntellitype.getInstance().registerHotKey(PRINT_SCREEN, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, 'C');
-                break;
-            case 1:
-                JIntellitype.getInstance().registerHotKey(PRINT_SCREEN, 0, 44);
-                break;
-        }
-
-        outputInfo("System started, screenshots will be uploaded to your Imgur account.");
-        outputInfo("Hotkey: " + comboShortcut.getSelectedItem().toString());
-        //</editor-fold>
-    }
-
-    private void stopKeyCapture() {
-        //<editor-fold defaultstate="collapsed" desc="Stop Key Capture (JIntellitype)">
-        JIntellitype.getInstance().unregisterHotKey(PRINT_SCREEN);
-        outputInfo("System stopped.");
-        //</editor-fold>
-    }
-
-    @Override
-    public void onHotKey(int aIdentifier) {
-        //<editor-fold defaultstate="collapsed" desc="JIntellitype onHotKey Override Method">
-        ImgurImage imgur;
-        AlbumEN album = getSelectedAlbum();
-
-        imgur = imgurClient.doImageUpload(getClientID(), chkbPrintActWin.isSelected(), album == null ? null : album.getDeletehash());
-
-        if (imgur != null) {
-            outputInfo("Upload complete.");
-            outputInfo(imgur.getData().toString());
-            ImageDAO.insert(imgur.getData().getLink(), imgur.getData().getDateString(), imgur.getData().getDeletehash());
-            updateImageTable();
-        } else {
-            outputError("Problem trying to upload the image, maybe wrong client id or connection issue? try again.");
-        }
-        //</editor-fold>
-    }
-
-    @Override
-    public void onIntellitype(int aCommand) {
-        //<editor-fold defaultstate="collapsed" desc="JIntellitype onIntellitype Override Method">
-//        switch (aCommand) {
-//            default:
-//                System.out.println("Undefined INTELLITYPE message caught " + Integer.toString(aCommand));
-//                break;
-//        }
-        //</editor-fold>
-    }
-
-    private AlbumEN getSelectedAlbum() {
+    public AlbumEN getSelectedAlbum() {
         if (tableAlbums.getSelectedRow() == -1) {
             return null;
         } else {
@@ -188,7 +113,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         }
     }
 
-    private ImageEN getSelectedImage() {
+    public ImageEN getSelectedImage() {
         if (tableImages.getSelectedRow() == -1) {
             return null;
         } else {
@@ -288,7 +213,8 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         trayIcon.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getButton() == MouseEvent.BUTTON1) {
+                if (!evt.isPopupTrigger() && evt.getButton() == MouseEvent.BUTTON1) {
+                    setState(NORMAL);
                     setVisible(true);
                     try {
                         SystemTray.getSystemTray().remove(trayIcon);
@@ -338,6 +264,11 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
         return defaultClientID;
     }
 
+    @Override
+    public Component getComponent(int n) {
+        return super.getComponent(n);
+    }
+
     public void outputError(String text) {
         txtAreaInfo.append("[ERROR] " + text);
         txtAreaInfo.append("\n");
@@ -346,6 +277,18 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
     public void outputInfo(String text) {
         txtAreaInfo.append("[INFO] " + text);
         txtAreaInfo.append("\n");
+    }
+
+    public JComboBox getComboShortcut() {
+        return comboShortcut;
+    }
+
+    public ImgurClient getImgurClient() {
+        return imgurClient;
+    }
+
+    public JCheckBox getCheckBoxPrintActiveWindow() {
+        return chkbPrintActWin;
     }
 
     @SuppressWarnings("unchecked")
@@ -583,7 +526,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         //<editor-fold defaultstate="collapsed" desc="Stop Button Action"> 
-        stopKeyCapture();
+        jintellitype.stopKeyCapture();
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
         comboShortcut.setEnabled(true);
@@ -592,7 +535,7 @@ public class Main extends javax.swing.JFrame implements HotkeyListener, Intellit
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         //<editor-fold defaultstate="collapsed" desc="Start Button Action">
-        startKeyCapture();
+        jintellitype.startKeyCapture();
         btnStop.setEnabled(true);
         btnStart.setEnabled(false);
         comboShortcut.setEnabled(false);
