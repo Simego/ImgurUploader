@@ -15,6 +15,8 @@ How to use (easy and fast!)
 
 #####2. Click the Start button and you're good to go!<br/>
 
+#####3. Please, report any bug/improvement, everyone are welcome to help :)<br/>
+
 
 Features
 ============
