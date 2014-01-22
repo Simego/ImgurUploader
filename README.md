@@ -38,9 +38,9 @@ https://github.com/Simego/ImgurUploader/blob/master/changelog.md
 
 Downloads
 ============
-####Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.zip
+####Windows x86: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x86.zip v1.4
 
-####Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.zip
+####Windows x64: https://dl.dropboxusercontent.com/u/32101688/ImgurUploader%20x64.zip v1.4
 
 
 Special thanks
