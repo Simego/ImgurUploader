@@ -9,7 +9,6 @@ Preview:<br/>
 ![http://i.imgur.com/TU66ZNf.png](http://i.imgur.com/TU66ZNf.png)
 
 
-
 How to use (easy and fast!)
 ============
 #####1. Have the latest Java for your system (x64 or x86 as the program requires it)
@@ -31,6 +30,10 @@ Click on any row of the table and press 'DELETE' to delete the entry.<br/>
 Create and Delete albums.<br/>
 Upload images to selected albums<br/>
 
+
+Changelog
+============
+https://github.com/Simego/ImgurUploader/blob/master/changelog.md
 
 
 Downloads
