@@ -642,7 +642,7 @@ public class Main extends javax.swing.JFrame {
 
     private void tableImagesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tableImagesFocusLost
         JTable table = (JTable) evt.getSource();
-        table.clearSelection();
+        //table.clearSelection();
     }//GEN-LAST:event_tableImagesFocusLost
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
