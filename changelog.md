@@ -1,3 +1,11 @@
+v1.4
+---
+* Fixed bug that you couldn't restore from system tray.
+* Fixed bug when trying to change image description.
+* JIntellitype now works on its own class (not mixed up with view)
+<br/>
+<br/>
+
 v1.3
 ---
 * Removed ClientID and default user field.
