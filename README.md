@@ -1,4 +1,4 @@
-ImgurUploader
+# ImgurUploader
 =============
 
 A simple software to make fast uploads to Imgur and have a little track of it (or not), making use of a shortcut to take screenshots that automatically uploads and give you the link to imgur.com.
